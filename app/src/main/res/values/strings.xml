@@ -1,3 +1,15 @@
 <resources>
-    <string name="app_name">UP Task</string>
+    <string name="app_name">UpTask</string>
+    <string name="app_etiqueta">UP TASK</string>
+    <string name="inicio_saludo">¡Hola, %1$s!</string>
+    <string name="inicio_pendientes">Tareas Pendientes</string>
+    <string name="inicio_atrasadas">Tareas Atrasadas</string>
+    <string name="inicio_completadas">Tareas Completadas</string>
+    <string name="inicio_cumplimiento">Cumplimiento General</string>
+    <string name="inicio_proximas">Próximas Entregas</string>
+    <string name="inicio_ver_todas">Ver todas</string>
+    <string name="porcentaje">%1$d%%</string>
+    <string name="prioridad_alta">Alta</string>
+    <string name="prioridad_media">Media</string>
+    <string name="prioridad_baja">Baja</string>
 </resources>

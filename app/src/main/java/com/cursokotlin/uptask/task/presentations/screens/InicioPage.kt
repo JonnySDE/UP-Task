@@ -1,13 +1,17 @@
 package com.cursokotlin.uptask.task.presentations.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -17,7 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -25,21 +29,31 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cursokotlin.uptask.R
+import com.cursokotlin.uptask.task.presentations.components.BotonAgregar
 import com.cursokotlin.uptask.task.presentations.components.ItemEntrega
 import com.cursokotlin.uptask.task.presentations.components.TarjetaEstadistica
+import com.cursokotlin.uptask.task.presentations.components.TarjetaMateria
 import com.cursokotlin.uptask.task.presentations.viewmodels.InicioViewModel
 
 @Composable
-fun InicioScreen(
+fun InicioPage(
+    alAgregarTarea: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: InicioViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    InicioContenido(
-        uiState = uiState,
-        modifier = modifier
-    )
+    Box(modifier = modifier.fillMaxSize()) {
+        InicioContenido(uiState = uiState)
+
+        BotonAgregar(
+            descripcion = stringResource(R.string.agregar_tarea),
+            alPresionar = alAgregarTarea,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        )
+    }
 }
 
 @Composable
@@ -49,7 +63,7 @@ fun InicioContenido(
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 96.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         // Encabezado con saludo y fecha
@@ -151,11 +165,42 @@ fun InicioContenido(
         }
 
         // Lista de entregas
-        items(uiState.proximasEntregas) { entrega ->
-            ItemEntrega(
-                entrega = entrega,
-                modifier = Modifier.fillMaxWidth()
+        item {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(uiState.proximasEntregas) { entrega ->
+                    ItemEntrega(
+                        entrega = entrega,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        }
+        // Título "Rendimiento por Materia"
+        item {
+            Text(
+                text = stringResource(R.string.inicio_rendimiento),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
             )
+        }
+
+        // Tarjetas que se deslizan hacia los lados
+        item {
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(uiState.rendimientoMaterias) { materia ->
+                    TarjetaMateria(
+                        nombre = materia.nombre,
+                        avance = materia.avance,
+                        color = materia.color,
+                        modifier = Modifier.width(150.dp)
+                    )
+                }
+            }
         }
     }
 }

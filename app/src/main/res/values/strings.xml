@@ -12,4 +12,7 @@
     <string name="prioridad_alta">Alta</string>
     <string name="prioridad_media">Media</string>
     <string name="prioridad_baja">Baja</string>
+    <string name="inicio_rendimiento">Rendimiento por Materia</string>
+    <string name="inicio_avance">%1$d%% Avance</string>
+    <string name="agregar_tarea">Agregar tarea</string>
 </resources>

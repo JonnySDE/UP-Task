@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.cursokotlin.uptask.task.presentations.screens.InicioScreen
+import com.cursokotlin.uptask.task.presentations.screens.UpTaskPage
 import com.cursokotlin.uptask.ui.theme.UpTaskTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,9 +20,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             UpTaskTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { espacioSeguro ->
-                    InicioScreen(modifier = Modifier.padding(espacioSeguro))
-                }
+                UpTaskPage()
             }
         }
     }

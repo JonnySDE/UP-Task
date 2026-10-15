@@ -3,7 +3,11 @@ package com.cursokotlin.uptask.task.presentations.viewmodels
 import androidx.lifecycle.ViewModel
 import com.cursokotlin.uptask.task.presentations.screens.EntregaUi
 import com.cursokotlin.uptask.task.presentations.screens.InicioUiState
+import com.cursokotlin.uptask.task.presentations.screens.MateriaRendimientoUi
 import com.cursokotlin.uptask.task.presentations.screens.Prioridad
+import com.cursokotlin.uptask.ui.theme.AzulMateria
+import com.cursokotlin.uptask.ui.theme.MoradoMateria
+import com.cursokotlin.uptask.ui.theme.VerdeMateria
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,7 +52,23 @@ class InicioViewModel : ViewModel() {
                         "En 2 dias",
                         Prioridad.BAJA
                     ),
-
+                    EntregaUi(
+                        "Past Simple activities",
+                        "Ingles IV",
+                        "En 2 dias",
+                        Prioridad.BAJA
+                    ),
+                    EntregaUi(
+                        "Ejercicio de pilas y colas",
+                        "Estructura de Datos",
+                        "En 5 dias",
+                        Prioridad.BAJA
+                    )
+            ),
+            rendimientoMaterias = listOf(
+                MateriaRendimientoUi("Aplicaciones Móviles", 85, VerdeMateria),
+                MateriaRendimientoUi("Aplicaciones Web", 60, AzulMateria),
+                MateriaRendimientoUi("Análisis y Diseño", 40, MoradoMateria)
             )
         )
     }

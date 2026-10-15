@@ -15,4 +15,7 @@
     <string name="inicio_rendimiento">Rendimiento por Materia</string>
     <string name="inicio_avance">%1$d%% Avance</string>
     <string name="agregar_tarea">Agregar tarea</string>
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_tareas">Tareas</string>
+    <string name="nav_materias">Materias</string>
 </resources>

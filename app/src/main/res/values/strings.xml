@@ -18,4 +18,17 @@
     <string name="nav_inicio">Inicio</string>
     <string name="nav_tareas">Tareas</string>
     <string name="nav_materias">Materias</string>
+    <string name="tareas_titulo">Gestión de Tareas</string>
+    <string name="tareas_subtitulo">Administra y filtra tus actividades</string>
+    <string name="tareas_buscar">Buscar tarea por título...</string>
+    <string name="filtro_materia">Materia: %1$s</string>
+    <string name="filtro_estado">Estado: %1$s</string>
+    <string name="filtro_prioridad">Prioridad: %1$s</string>
+    <string name="tareas_ordenar_por">Ordenar por:</string>
+    <string name="tareas_pendientes_titulo">Tareas Pendientes (%1$d)</string>
+    <string name="tareas_entregadas_titulo">Tareas Entregadas (%1$d)</string>
+    <string name="tarea_completada">✓ Completada</string>
+    <string name="buscar">Buscar</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
 </resources>

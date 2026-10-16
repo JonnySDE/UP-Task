@@ -70,7 +70,10 @@ fun UpTaskPage() {
                 alAgregarTarea = {},
                 modifier = Modifier.padding(espacioSeguro)
             )
-            Seccion.TAREAS -> TareasPage(modifier = Modifier.padding(espacioSeguro))
+            Seccion.TAREAS -> TareasPage(
+                alAgregarTarea = { },
+                modifier = Modifier.padding(espacioSeguro)
+            )
             Seccion.MATERIAS -> MateriasPage(modifier = Modifier.padding(espacioSeguro))
         }
     }

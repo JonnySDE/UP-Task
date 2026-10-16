@@ -36,7 +36,8 @@ data class TareaUi(
     val vence: String,
     val urgente: Boolean,
     val diasParaVencer: Int,
-    val completada: Boolean
+    val completada: Boolean,
+    val descripcion: String = ""
 )
 
 // Todo lo que la página de Tareas necesita para dibujarse

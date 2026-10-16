@@ -20,7 +20,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cursokotlin.uptask.R
+import com.cursokotlin.uptask.task.presentations.viewmodels.TareasViewModel
 
 // Las tres secciones de la barra, cada una con su texto y su ícono
 enum class Seccion(
@@ -34,48 +36,59 @@ enum class Seccion(
 
 @Composable
 fun UpTaskPage() {
-    // Guarda en qué sección estamos. Empezamos en la vista de Inicio
+    // En qué sección de la barra estamos
     var seccionActual by rememberSaveable { mutableStateOf(Seccion.INICIO) }
 
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = {
-            NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-                // Dibuja un botón por cada sección
-                Seccion.entries.forEach { seccion ->
-                    NavigationBarItem(
-                        selected = seccion == seccionActual,
-                        onClick = { seccionActual = seccion },
-                        icon = {
-                            Icon(
-                                painter = painterResource(seccion.icono),
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
+    // Si es true, se muestra el formulario de Nueva Tarea en lugar de la barra
+    var agregandoTarea by rememberSaveable { mutableStateOf(false) }
+
+
+    val tareasViewModel: TareasViewModel = viewModel()
+
+    if (agregandoTarea) {
+        AgregarTareaPage(
+            alVolver = { agregandoTarea = false },
+            alGuardar = { nuevaTarea -> tareasViewModel.agregarTarea(nuevaTarea) }
+        )
+    } else {
+        Scaffold(
+            containerColor = MaterialTheme.colorScheme.background,
+            bottomBar = {
+                NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+                    Seccion.entries.forEach { seccion ->
+                        NavigationBarItem(
+                            selected = seccion == seccionActual,
+                            onClick = { seccionActual = seccion },
+                            icon = {
+                                Icon(
+                                    painter = painterResource(seccion.icono),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            },
+                            label = { Text(text = stringResource(seccion.titulo)) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                indicatorColor = MaterialTheme.colorScheme.primaryContainer
                             )
-                        },
-                        label = { Text(text = stringResource(seccion.titulo)) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                            indicatorColor = MaterialTheme.colorScheme.primaryContainer
                         )
-                    )
+                    }
                 }
             }
-        }
-    ) { espacioSeguro ->
-        // Muestra la página que corresponde a la sección actual
-        when (seccionActual) {
-            Seccion.INICIO -> InicioPage(
-                alAgregarTarea = { },
-                alVerTodas = { seccionActual = Seccion.TAREAS },
-                modifier = Modifier.padding(espacioSeguro)
-            )
-            Seccion.TAREAS -> TareasPage(
-                alAgregarTarea = { },
-                modifier = Modifier.padding(espacioSeguro)
-            )
-            Seccion.MATERIAS -> MateriasPage(modifier = Modifier.padding(espacioSeguro))
+        ) { espacioSeguro ->
+            when (seccionActual) {
+                Seccion.INICIO -> InicioPage(
+                    alAgregarTarea = { agregandoTarea = true },
+                    alVerTodas = { seccionActual = Seccion.TAREAS },
+                    modifier = Modifier.padding(espacioSeguro)
+                )
+                Seccion.TAREAS -> TareasPage(
+                    alAgregarTarea = { agregandoTarea = true },
+                    modifier = Modifier.padding(espacioSeguro)
+                )
+                Seccion.MATERIAS -> MateriasPage(modifier = Modifier.padding(espacioSeguro))
+            }
         }
     }
 }

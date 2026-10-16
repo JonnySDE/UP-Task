@@ -38,4 +38,18 @@
     <string name="orden_fecha_lejana">Fecha de entrega (Lejanas)</string>
     <string name="orden_prioridad">Prioridad (Mayor primero)</string>
     <string name="tareas_sin_resultados">No se encontraron tareas</string>
+    <string name="nueva_tarea_titulo">Nueva Tarea</string>
+    <string name="volver">Volver</string>
+    <string name="campo_titulo_tarea">Título de la Tarea *</string>
+    <string name="campo_titulo_placeholder">Ej. Implementar arquitectura MVVM</string>
+    <string name="campo_descripcion">Descripción (Opcional)</string>
+    <string name="campo_descripcion_placeholder">Escribe las instrucciones de la tarea</string>
+    <string name="campo_materia">Materia</string>
+    <string name="campo_fecha">Fecha de Entrega</string>
+    <string name="campo_prioridad">Nivel de Prioridad</string>
+    <string name="error_titulo">El título es obligatorio</string>
+    <string name="guardar_tarea">Guardar Tarea</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="calendario">Calendario</string>
 </resources>

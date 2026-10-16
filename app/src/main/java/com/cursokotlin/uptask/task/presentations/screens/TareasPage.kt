@@ -29,7 +29,7 @@ import com.cursokotlin.uptask.task.presentations.components.ItemTarea
 import com.cursokotlin.uptask.task.presentations.components.SelectorOrden
 import com.cursokotlin.uptask.task.presentations.viewmodels.TareasViewModel
 
-// Esta página se conecta con el ViewModel y observa su estado
+
 @Composable
 fun TareasPage(
     alAgregarTarea: () -> Unit,
@@ -41,7 +41,13 @@ fun TareasPage(
     Box(modifier = modifier.fillMaxSize()) {
         TareasContenido(
             uiState = uiState,
-            alCambiarBusqueda = viewModel::cambiarBusqueda
+            alCambiarBusqueda = viewModel::cambiarBusqueda,
+            alCambiarFiltroMateria = viewModel::cambiarFiltroMateria,
+            alCambiarFiltroEstado = viewModel::cambiarFiltroEstado,
+            alCambiarFiltroPrioridad = viewModel::cambiarFiltroPrioridad,
+            alCambiarOrden = viewModel::cambiarOrden,
+            alCambiarEstadoTarea = viewModel::cambiarEstadoTarea,
+            alEliminarTarea = viewModel::eliminarTarea
         )
 
         BotonAgregar(
@@ -58,6 +64,12 @@ fun TareasPage(
 fun TareasContenido(
     uiState: TareasUiState,
     alCambiarBusqueda: (String) -> Unit,
+    alCambiarFiltroMateria: () -> Unit,
+    alCambiarFiltroEstado: () -> Unit,
+    alCambiarFiltroPrioridad: () -> Unit,
+    alCambiarOrden: () -> Unit,
+    alCambiarEstadoTarea: (Int, Boolean) -> Unit,
+    alEliminarTarea: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -95,28 +107,36 @@ fun TareasContenido(
             )
         }
 
-        // Filtros
+        // Filtro
         item {
+            val textoMateria = uiState.filtroMateria ?: stringResource(R.string.filtro_todas)
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 ChipFiltro(
-                    texto = stringResource(R.string.filtro_materia, uiState.filtroMateria),
-                    seleccionado = true,
-                    alPresionar = {  },
+                    texto = stringResource(R.string.filtro_materia, textoMateria),
+                    seleccionado = uiState.filtroMateria != null,
+                    alPresionar = alCambiarFiltroMateria,
                     modifier = Modifier.weight(1f)
                 )
                 ChipFiltro(
-                    texto = stringResource(R.string.filtro_estado, uiState.filtroEstado),
-                    seleccionado = false,
-                    alPresionar = {  },
+                    texto = stringResource(
+                        R.string.filtro_estado,
+                        stringResource(uiState.filtroEstado.texto)
+                    ),
+                    seleccionado = uiState.filtroEstado != FiltroEstado.TODAS,
+                    alPresionar = alCambiarFiltroEstado,
                     modifier = Modifier.weight(1f)
                 )
                 ChipFiltro(
-                    texto = stringResource(R.string.filtro_prioridad, uiState.filtroPrioridad),
-                    seleccionado = false,
-                    alPresionar = { },
+                    texto = stringResource(
+                        R.string.filtro_prioridad,
+                        stringResource(uiState.filtroPrioridad.texto)
+                    ),
+                    seleccionado = uiState.filtroPrioridad != FiltroPrioridad.TODAS,
+                    alPresionar = alCambiarFiltroPrioridad,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -125,48 +145,64 @@ fun TareasContenido(
         // Selector de orden
         item {
             SelectorOrden(
-                texto = uiState.orden,
-                alPresionar = {  }
+                texto = stringResource(uiState.orden.texto),
+                alPresionar = alCambiarOrden
             )
+        }
+
+        // Mensaje cuando no hay nada que mostrar
+        if (uiState.tareasPendientes.isEmpty() && uiState.tareasEntregadas.isEmpty()) {
+            item {
+                Text(
+                    text = stringResource(R.string.tareas_sin_resultados),
+                    modifier = Modifier.padding(top = 24.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
         // Tareas pendientes
-        item {
-            Text(
-                text = stringResource(R.string.tareas_pendientes_titulo, uiState.tareasPendientes.size),
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-        items(uiState.tareasPendientes, key = { it.id }) { tarea ->
-            ItemTarea(
-                tarea = tarea,
-                alCambiarEstado = { },
-                alEditar = {},
-                alEliminar = {},
-                modifier = Modifier.fillMaxWidth()
-            )
+        if (uiState.tareasPendientes.isNotEmpty()) {
+            item {
+                Text(
+                    text = stringResource(R.string.tareas_pendientes_titulo, uiState.tareasPendientes.size),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            items(uiState.tareasPendientes, key = { it.id }) { tarea ->
+                ItemTarea(
+                    tarea = tarea,
+                    alCambiarEstado = { completada -> alCambiarEstadoTarea(tarea.id, completada) },
+                    alEditar = { },
+                    alEliminar = { alEliminarTarea(tarea.id) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
 
         // Tareas entregadas
-        item {
-            Text(
-                text = stringResource(R.string.tareas_entregadas_titulo, uiState.tareasEntregadas.size),
-                modifier = Modifier.padding(top = 12.dp),
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-        items(uiState.tareasEntregadas, key = { it.id }) { tarea ->
-            ItemTarea(
-                tarea = tarea,
-                alCambiarEstado = { },
-                alEditar = {},
-                alEliminar = { },
-                modifier = Modifier.fillMaxWidth()
-            )
+        if (uiState.tareasEntregadas.isNotEmpty()) {
+            item {
+                Text(
+                    text = stringResource(R.string.tareas_entregadas_titulo, uiState.tareasEntregadas.size),
+                    modifier = Modifier.padding(top = 12.dp),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            items(uiState.tareasEntregadas, key = { it.id }) { tarea ->
+                ItemTarea(
+                    tarea = tarea,
+                    alCambiarEstado = { completada -> alCambiarEstadoTarea(tarea.id, completada) },
+                    alEditar = {},
+                    alEliminar = { alEliminarTarea(tarea.id) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }

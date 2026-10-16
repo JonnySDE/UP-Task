@@ -34,18 +34,22 @@ import com.cursokotlin.uptask.task.presentations.components.ItemEntrega
 import com.cursokotlin.uptask.task.presentations.components.TarjetaEstadistica
 import com.cursokotlin.uptask.task.presentations.components.TarjetaMateria
 import com.cursokotlin.uptask.task.presentations.viewmodels.InicioViewModel
+import androidx.compose.foundation.clickable
 
 @Composable
 fun InicioPage(
     alAgregarTarea: () -> Unit,
+    alVerTodas: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: InicioViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Box(modifier = modifier.fillMaxSize()) {
-        InicioContenido(uiState = uiState)
-
+        InicioContenido(
+            uiState = uiState,
+            alVerTodas = alVerTodas
+        )
         BotonAgregar(
             descripcion = stringResource(R.string.agregar_tarea),
             alPresionar = alAgregarTarea,
@@ -59,6 +63,7 @@ fun InicioPage(
 @Composable
 fun InicioContenido(
     uiState: InicioUiState,
+    alVerTodas: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -158,6 +163,7 @@ fun InicioContenido(
                 )
                 Text(
                     text = stringResource(R.string.inicio_ver_todas),
+                    modifier = Modifier.clickable(onClick = alVerTodas),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary
                 )

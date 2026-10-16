@@ -67,7 +67,8 @@ fun UpTaskPage() {
         // Muestra la página que corresponde a la sección actual
         when (seccionActual) {
             Seccion.INICIO -> InicioPage(
-                alAgregarTarea = {},
+                alAgregarTarea = { },
+                alVerTodas = { seccionActual = Seccion.TAREAS },
                 modifier = Modifier.padding(espacioSeguro)
             )
             Seccion.TAREAS -> TareasPage(

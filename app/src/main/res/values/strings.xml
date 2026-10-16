@@ -31,4 +31,11 @@
     <string name="buscar">Buscar</string>
     <string name="editar">Editar</string>
     <string name="eliminar">Eliminar</string>
+    <string name="filtro_todas">Todas</string>
+    <string name="estado_pendientes">Pend.</string>
+    <string name="estado_completadas">Compl.</string>
+    <string name="orden_fecha_proxima">Fecha de entrega (Próximas)</string>
+    <string name="orden_fecha_lejana">Fecha de entrega (Lejanas)</string>
+    <string name="orden_prioridad">Prioridad (Mayor primero)</string>
+    <string name="tareas_sin_resultados">No se encontraron tareas</string>
 </resources>

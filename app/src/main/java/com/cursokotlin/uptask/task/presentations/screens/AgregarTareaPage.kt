@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,11 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cursokotlin.uptask.R
@@ -40,7 +40,6 @@ import com.cursokotlin.uptask.task.presentations.components.SelectorMateria
 import com.cursokotlin.uptask.task.presentations.components.SelectorPrioridad
 import com.cursokotlin.uptask.task.presentations.viewmodels.AgregarTareaViewModel
 
-
 @Composable
 fun AgregarTareaPage(
     alVolver: () -> Unit,
@@ -50,12 +49,7 @@ fun AgregarTareaPage(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Cancelar y el botón "atrás" del teléfono limpian el formulario y regresan
-    val cerrar = {
-        viewModel.reiniciar()
-        alVolver()
-    }
-    BackHandler(onBack = cerrar)
+    BackHandler(onBack = alVolver)
 
     AgregarTareaContenido(
         uiState = uiState,
@@ -74,7 +68,7 @@ fun AgregarTareaPage(
                 alVolver()
             }
         },
-        alCancelar = cerrar,
+        alCancelar = alVolver,
         modifier = modifier
     )
 }
@@ -95,6 +89,9 @@ fun AgregarTareaContenido(
     alCancelar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val titulo = if (uiState.esEdicion) R.string.editar_tarea_titulo else R.string.nueva_tarea_titulo
+
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.surface
@@ -108,7 +105,7 @@ fun AgregarTareaContenido(
                 .padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // Flecha de regreso y título
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = alCancelar) {
                     Icon(
@@ -118,7 +115,7 @@ fun AgregarTareaContenido(
                     )
                 }
                 Text(
-                    text = stringResource(R.string.nueva_tarea_titulo),
+                    text = stringResource(titulo),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )

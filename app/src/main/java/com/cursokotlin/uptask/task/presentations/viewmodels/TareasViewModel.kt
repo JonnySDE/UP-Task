@@ -3,10 +3,13 @@ package com.cursokotlin.uptask.task.presentations.viewmodels
 import androidx.lifecycle.ViewModel
 import com.cursokotlin.uptask.task.presentations.screens.FiltroEstado
 import com.cursokotlin.uptask.task.presentations.screens.FiltroPrioridad
+import com.cursokotlin.uptask.task.presentations.screens.NuevaTarea
 import com.cursokotlin.uptask.task.presentations.screens.Orden
 import com.cursokotlin.uptask.task.presentations.screens.Prioridad
 import com.cursokotlin.uptask.task.presentations.screens.TareaUi
 import com.cursokotlin.uptask.task.presentations.screens.TareasUiState
+import com.cursokotlin.uptask.task.presentations.utils.MILISEGUNDOS_POR_DIA
+import com.cursokotlin.uptask.task.presentations.utils.hoyEnMillisUtc
 import com.cursokotlin.uptask.ui.theme.AzulMateria
 import com.cursokotlin.uptask.ui.theme.MoradoMateria
 import com.cursokotlin.uptask.ui.theme.VerdeMateria
@@ -14,9 +17,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import com.cursokotlin.uptask.task.presentations.screens.NuevaTarea
-import com.cursokotlin.uptask.task.presentations.utils.MILISEGUNDOS_POR_DIA
-import com.cursokotlin.uptask.task.presentations.utils.hoyEnMillisUtc
 
 class TareasViewModel : ViewModel() {
 
@@ -74,24 +74,44 @@ class TareasViewModel : ViewModel() {
         mostrarTareasFiltradas()
     }
 
-    // Recibe lo que el formulario guardó y lo convierte en una tarea de la lista
-    fun agregarTarea(nueva: NuevaTarea) {
-        val dias = ((nueva.fechaMillis - hoyEnMillisUtc()) / MILISEGUNDOS_POR_DIA).toInt()
+    // Recibe lo que el formulario guardó: crea una tarea nueva o actualiza una existente
+    fun guardarTarea(datos: NuevaTarea) {
+        val dias = ((datos.fechaMillis - hoyEnMillisUtc()) / MILISEGUNDOS_POR_DIA).toInt()
 
-        val tarea = TareaUi(
-            id = (todasLasTareas.maxOfOrNull { it.id } ?: 0) + 1,
-            titulo = nueva.titulo,
-            materia = nueva.materia.nombre,
-            colorMateria = nueva.materia.color,
-            prioridad = nueva.prioridad,
-            vence = textoVencimiento(dias),
-            urgente = dias <= 0,
-            diasParaVencer = dias,
-            completada = false,
-            descripcion = nueva.descripcion
-        )
-
-        todasLasTareas = todasLasTareas + tarea
+        if (datos.id == null) {
+            // Tarea nueva
+            val nueva = TareaUi(
+                id = (todasLasTareas.maxOfOrNull { it.id } ?: 0) + 1,
+                titulo = datos.titulo,
+                materia = datos.materia.nombre,
+                colorMateria = datos.materia.color,
+                prioridad = datos.prioridad,
+                vence = textoVencimiento(dias),
+                urgente = dias <= 0,
+                diasParaVencer = dias,
+                completada = false,
+                descripcion = datos.descripcion
+            )
+            todasLasTareas = todasLasTareas + nueva
+        } else {
+            // Tarea existente: solo cambian los datos del formulario. Se conserva si estaba completada.
+            todasLasTareas = todasLasTareas.map { tarea ->
+                if (tarea.id == datos.id) {
+                    tarea.copy(
+                        titulo = datos.titulo,
+                        materia = datos.materia.nombre,
+                        colorMateria = datos.materia.color,
+                        prioridad = datos.prioridad,
+                        vence = textoVencimiento(dias),
+                        urgente = dias <= 0,
+                        diasParaVencer = dias,
+                        descripcion = datos.descripcion
+                    )
+                } else {
+                    tarea
+                }
+            }
+        }
         mostrarTareasFiltradas()
     }
 
@@ -150,7 +170,7 @@ class TareasViewModel : ViewModel() {
     private fun cargarDatosDePrueba() {
         todasLasTareas = listOf(
             TareaUi(id = 1, titulo = "Investigacion Composables", materia = "Aplicaciones Móviles", colorMateria = VerdeMateria, prioridad = Prioridad.ALTA, vence = "Vence Hoy", urgente = true, diasParaVencer = 0, completada = false),
-            TareaUi(id = 2, titulo = "Diapositivas de analisis", materia = "Análisis y Diseño", colorMateria = MoradoMateria, prioridad = Prioridad.MEDIA, vence = "2 dias", urgente = false, diasParaVencer = 1, completada = false),
+            TareaUi(id = 2, titulo = "Diapositivas de analisis", materia = "Análisis y Diseño", colorMateria = MoradoMateria, prioridad = Prioridad.MEDIA, vence = "Mañana", urgente = false, diasParaVencer = 1, completada = false),
             TareaUi(id = 3, titulo = "Contratos de API", materia = "Aplicaciones Web", colorMateria = AzulMateria, prioridad = Prioridad.MEDIA, vence = "En 2 días", urgente = false, diasParaVencer = 2, completada = false),
             TareaUi(id = 4, titulo = "Revisar rúbrica del proyecto", materia = "Aplicaciones Móviles", colorMateria = VerdeMateria, prioridad = Prioridad.ALTA, vence = "Atrasada", urgente = true, diasParaVencer = -1, completada = false),
             TareaUi(id = 5, titulo = "Wireframes de la app", materia = "Análisis y Diseño", colorMateria = MoradoMateria, prioridad = Prioridad.BAJA, vence = "En 5 días", urgente = false, diasParaVencer = 5, completada = false),

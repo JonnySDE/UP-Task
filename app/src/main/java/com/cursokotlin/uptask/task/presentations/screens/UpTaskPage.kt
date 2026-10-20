@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cursokotlin.uptask.R
 import com.cursokotlin.uptask.task.presentations.viewmodels.AgregarMateriaViewModel
+import com.cursokotlin.uptask.task.presentations.viewmodels.AgregarTareaViewModel
 import com.cursokotlin.uptask.task.presentations.viewmodels.MateriasViewModel
 import com.cursokotlin.uptask.task.presentations.viewmodels.TareasViewModel
 
@@ -42,19 +43,26 @@ fun UpTaskPage() {
     var seccionActual by rememberSaveable { mutableStateOf(Seccion.INICIO) }
 
     // Si alguno es true, se muestra el formulario en lugar de la barra
-    var agregandoTarea by rememberSaveable { mutableStateOf(false) }
+    var mostrandoFormularioTarea by rememberSaveable { mutableStateOf(false) }
     var mostrandoFormularioMateria by rememberSaveable { mutableStateOf(false) }
 
     // Son los mismos ViewModels que usan las páginas. Temporal, hasta tener el Repository.
     val tareasViewModel: TareasViewModel = viewModel()
     val materiasViewModel: MateriasViewModel = viewModel()
+    val formularioTareaViewModel: AgregarTareaViewModel = viewModel()
     val formularioMateriaViewModel: AgregarMateriaViewModel = viewModel()
 
+    // Abre el formulario de tarea vacío. Lo usan Inicio y Tareas.
+    val abrirNuevaTarea = {
+        formularioTareaViewModel.iniciarNueva()
+        mostrandoFormularioTarea = true
+    }
+
     when {
-        agregandoTarea -> {
+        mostrandoFormularioTarea -> {
             AgregarTareaPage(
-                alVolver = { agregandoTarea = false },
-                alGuardar = { nuevaTarea -> tareasViewModel.agregarTarea(nuevaTarea) }
+                alVolver = { mostrandoFormularioTarea = false },
+                alGuardar = { datos -> tareasViewModel.guardarTarea(datos) }
             )
         }
 
@@ -94,13 +102,18 @@ fun UpTaskPage() {
             ) { espacioSeguro ->
                 when (seccionActual) {
                     Seccion.INICIO -> InicioPage(
-                        alAgregarTarea = { agregandoTarea = true },
+                        alAgregarTarea = abrirNuevaTarea,
                         alVerTodas = { seccionActual = Seccion.TAREAS },
                         modifier = Modifier.padding(espacioSeguro)
                     )
 
                     Seccion.TAREAS -> TareasPage(
-                        alAgregarTarea = { agregandoTarea = true },
+                        alAgregarTarea = abrirNuevaTarea,
+                        alEditarTarea = { tarea ->
+                            // Antes de abrir, el formulario se llena con la tarea elegida
+                            formularioTareaViewModel.iniciarEdicion(tarea)
+                            mostrandoFormularioTarea = true
+                        },
                         modifier = Modifier.padding(espacioSeguro)
                     )
 

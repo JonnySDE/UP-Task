@@ -77,4 +77,5 @@
     <string name="archivar_materia">Archivar Materia</string>
     <string name="archivar_materia_descripcion">Ocultar de la selección de materias</string>
     <string name="guardar_materia">Guardar Materia</string>
+    <string name="editar_tarea_titulo">Editar Tarea</string>
 </resources>

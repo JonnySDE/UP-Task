@@ -29,10 +29,10 @@ import com.cursokotlin.uptask.task.presentations.components.ItemTarea
 import com.cursokotlin.uptask.task.presentations.components.SelectorOrden
 import com.cursokotlin.uptask.task.presentations.viewmodels.TareasViewModel
 
-
 @Composable
 fun TareasPage(
     alAgregarTarea: () -> Unit,
+    alEditarTarea: (TareaUi) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: TareasViewModel = viewModel()
 ) {
@@ -47,6 +47,7 @@ fun TareasPage(
             alCambiarFiltroPrioridad = viewModel::cambiarFiltroPrioridad,
             alCambiarOrden = viewModel::cambiarOrden,
             alCambiarEstadoTarea = viewModel::cambiarEstadoTarea,
+            alEditarTarea = alEditarTarea,
             alEliminarTarea = viewModel::eliminarTarea
         )
 
@@ -69,6 +70,7 @@ fun TareasContenido(
     alCambiarFiltroPrioridad: () -> Unit,
     alCambiarOrden: () -> Unit,
     alCambiarEstadoTarea: (Int, Boolean) -> Unit,
+    alEditarTarea: (TareaUi) -> Unit,
     alEliminarTarea: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -107,7 +109,7 @@ fun TareasContenido(
             )
         }
 
-        // Filtro
+        // Los tres chips de filtro. Se pintan de rojo cuando el filtro está activo.
         item {
             val textoMateria = uiState.filtroMateria ?: stringResource(R.string.filtro_todas)
 
@@ -176,14 +178,13 @@ fun TareasContenido(
                 ItemTarea(
                     tarea = tarea,
                     alCambiarEstado = { completada -> alCambiarEstadoTarea(tarea.id, completada) },
-                    alEditar = { },
+                    alEditar = { alEditarTarea(tarea) },
                     alEliminar = { alEliminarTarea(tarea.id) },
                     modifier = Modifier.fillMaxWidth()
                 )
             }
         }
 
-        // Tareas entregadas
         if (uiState.tareasEntregadas.isNotEmpty()) {
             item {
                 Text(
@@ -198,7 +199,7 @@ fun TareasContenido(
                 ItemTarea(
                     tarea = tarea,
                     alCambiarEstado = { completada -> alCambiarEstadoTarea(tarea.id, completada) },
-                    alEditar = {},
+                    alEditar = { alEditarTarea(tarea) },
                     alEliminar = { alEliminarTarea(tarea.id) },
                     modifier = Modifier.fillMaxWidth()
                 )

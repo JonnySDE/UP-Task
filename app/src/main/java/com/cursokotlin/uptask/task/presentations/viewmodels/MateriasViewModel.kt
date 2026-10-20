@@ -118,8 +118,8 @@ class MateriasViewModel : ViewModel() {
     // Datos temporales
     private fun cargarDatosDePrueba() {
         todasLasMaterias = listOf(
-            crearMateria(1, "Apps Móviles", VerdeMateria, pendientes = 2, completadas = 5),
-            crearMateria(2, "Apps Web", AzulMateria, pendientes = 1, completadas = 3),
+            crearMateria(1, "Aplicaciones Móviles", VerdeMateria, pendientes = 2, completadas = 5),
+            crearMateria(2, "Aplicaciones Web", AzulMateria, pendientes = 1, completadas = 3),
             crearMateria(3, "Análisis y Diseño", MoradoMateria, pendientes = 3, completadas = 2),
             crearMateria(4, "Inglés IV", NaranjaMateria, pendientes = 2, completadas = 2),
             crearMateria(5, "Ética Profesional", AzulMarinoMateria, pendientes = 0, completadas = 0),

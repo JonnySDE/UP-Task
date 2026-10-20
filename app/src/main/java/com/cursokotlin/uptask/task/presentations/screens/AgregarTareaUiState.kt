@@ -2,24 +2,23 @@ package com.cursokotlin.uptask.task.presentations.screens
 
 import androidx.compose.ui.graphics.Color
 
-// Una materia que se puede elegir en el formulario
 data class MateriaUi(
     val id: Int,
     val nombre: String,
     val color: Color
 )
 
-// Los datos que el formulario entrega cuando se guarda
 data class NuevaTarea(
     val titulo: String,
     val descripcion: String,
     val materia: MateriaUi,
     val prioridad: Prioridad,
-    val fechaMillis: Long
+    val fechaMillis: Long,
+    val id: Int? = null
 )
 
-// Todo lo que el formulario necesita para dibujarse
 data class AgregarTareaUiState(
+    val id: Int? = null,
     val titulo: String = "",
     val descripcion: String = "",
     val materias: List<MateriaUi> = emptyList(),
@@ -30,4 +29,8 @@ data class AgregarTareaUiState(
     val calendarioVisible: Boolean = false,
     val prioridad: Prioridad = Prioridad.MEDIA,
     val errorTitulo: Boolean = false
-)
+) {
+
+    val esEdicion: Boolean
+        get() = id != null
+}

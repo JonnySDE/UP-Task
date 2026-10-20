@@ -22,6 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cursokotlin.uptask.R
+import com.cursokotlin.uptask.task.presentations.viewmodels.AgregarMateriaViewModel
+import com.cursokotlin.uptask.task.presentations.viewmodels.MateriasViewModel
 import com.cursokotlin.uptask.task.presentations.viewmodels.TareasViewModel
 
 // Las tres secciones de la barra, cada una con su texto y su ícono
@@ -39,55 +41,83 @@ fun UpTaskPage() {
     // En qué sección de la barra estamos
     var seccionActual by rememberSaveable { mutableStateOf(Seccion.INICIO) }
 
-    // Si es true, se muestra el formulario de Nueva Tarea en lugar de la barra
+    // Si alguno es true, se muestra el formulario en lugar de la barra
     var agregandoTarea by rememberSaveable { mutableStateOf(false) }
+    var mostrandoFormularioMateria by rememberSaveable { mutableStateOf(false) }
 
-
+    // Son los mismos ViewModels que usan las páginas. Temporal, hasta tener el Repository.
     val tareasViewModel: TareasViewModel = viewModel()
+    val materiasViewModel: MateriasViewModel = viewModel()
+    val formularioMateriaViewModel: AgregarMateriaViewModel = viewModel()
 
-    if (agregandoTarea) {
-        AgregarTareaPage(
-            alVolver = { agregandoTarea = false },
-            alGuardar = { nuevaTarea -> tareasViewModel.agregarTarea(nuevaTarea) }
-        )
-    } else {
-        Scaffold(
-            containerColor = MaterialTheme.colorScheme.background,
-            bottomBar = {
-                NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-                    Seccion.entries.forEach { seccion ->
-                        NavigationBarItem(
-                            selected = seccion == seccionActual,
-                            onClick = { seccionActual = seccion },
-                            icon = {
-                                Icon(
-                                    painter = painterResource(seccion.icono),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(24.dp)
+    when {
+        agregandoTarea -> {
+            AgregarTareaPage(
+                alVolver = { agregandoTarea = false },
+                alGuardar = { nuevaTarea -> tareasViewModel.agregarTarea(nuevaTarea) }
+            )
+        }
+
+        mostrandoFormularioMateria -> {
+            AgregarMateriaPage(
+                alVolver = { mostrandoFormularioMateria = false },
+                alGuardar = { datos -> materiasViewModel.guardarMateria(datos) }
+            )
+        }
+
+        else -> {
+            Scaffold(
+                containerColor = MaterialTheme.colorScheme.background,
+                bottomBar = {
+                    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+                        Seccion.entries.forEach { seccion ->
+                            NavigationBarItem(
+                                selected = seccion == seccionActual,
+                                onClick = { seccionActual = seccion },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(seccion.icono),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                },
+                                label = { Text(text = stringResource(seccion.titulo)) },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.primary,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    indicatorColor = MaterialTheme.colorScheme.primaryContainer
                                 )
-                            },
-                            label = { Text(text = stringResource(seccion.titulo)) },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
-                                selectedTextColor = MaterialTheme.colorScheme.primary,
-                                indicatorColor = MaterialTheme.colorScheme.primaryContainer
                             )
-                        )
+                        }
                     }
                 }
-            }
-        ) { espacioSeguro ->
-            when (seccionActual) {
-                Seccion.INICIO -> InicioPage(
-                    alAgregarTarea = { agregandoTarea = true },
-                    alVerTodas = { seccionActual = Seccion.TAREAS },
-                    modifier = Modifier.padding(espacioSeguro)
-                )
-                Seccion.TAREAS -> TareasPage(
-                    alAgregarTarea = { agregandoTarea = true },
-                    modifier = Modifier.padding(espacioSeguro)
-                )
-                Seccion.MATERIAS -> MateriasPage(modifier = Modifier.padding(espacioSeguro))
+            ) { espacioSeguro ->
+                when (seccionActual) {
+                    Seccion.INICIO -> InicioPage(
+                        alAgregarTarea = { agregandoTarea = true },
+                        alVerTodas = { seccionActual = Seccion.TAREAS },
+                        modifier = Modifier.padding(espacioSeguro)
+                    )
+
+                    Seccion.TAREAS -> TareasPage(
+                        alAgregarTarea = { agregandoTarea = true },
+                        modifier = Modifier.padding(espacioSeguro)
+                    )
+
+                    Seccion.MATERIAS -> MateriasPage(
+                        alAgregarMateria = {
+                            // Antes de abrir, el formulario se deja vacío
+                            formularioMateriaViewModel.iniciarNueva()
+                            mostrandoFormularioMateria = true
+                        },
+                        alEditarMateria = { materia ->
+                            // Antes de abrir, el formulario se llena con la materia elegida
+                            formularioMateriaViewModel.iniciarEdicion(materia)
+                            mostrandoFormularioMateria = true
+                        },
+                        modifier = Modifier.padding(espacioSeguro)
+                    )
+                }
             }
         }
     }

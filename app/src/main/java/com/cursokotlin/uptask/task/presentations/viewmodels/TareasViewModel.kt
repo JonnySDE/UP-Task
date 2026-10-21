@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.cursokotlin.uptask.task.presentations.utils.textoVencimiento
 
 class TareasViewModel(
     private val repository: UpTaskRepository
@@ -143,16 +144,6 @@ class TareasViewModel(
         }
     }
 
-    // ---------- LÓGICA INTERNA ----------
-
-    private fun textoVencimiento(dias: Int): String {
-        return when {
-            dias < 0 -> "Atrasada"
-            dias == 0 -> "Vence Hoy"
-            dias == 1 -> "Mañana"
-            else -> "En $dias días"
-        }
-    }
 
     // Aplica búsqueda, filtros y orden a la lista completa y actualiza el estado
     private fun mostrarTareasFiltradas() {

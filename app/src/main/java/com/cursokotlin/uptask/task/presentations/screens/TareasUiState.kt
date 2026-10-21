@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.cursokotlin.uptask.R
 import com.cursokotlin.uptask.task.data.model.Prioridad
+import com.cursokotlin.uptask.task.presentations.utils.TextoFecha
 
 // Opciones del filtro de estado. Cada una trae su texto.
 enum class FiltroEstado(@StringRes val texto: Int) {
@@ -35,7 +36,7 @@ data class TareaUi(
     val materia: String,
     val colorMateria: Color,
     val prioridad: Prioridad,
-    val vence: String,
+    val vence: TextoFecha,
     val urgente: Boolean,
     val diasParaVencer: Int,
     val completada: Boolean,

@@ -49,7 +49,11 @@ fun ItemTarea(
         tarea.urgente -> MaterialTheme.colorScheme.primary
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
-    val textoEstado = if (tarea.completada) stringResource(R.string.tarea_completada) else tarea.vence
+    val textoEstado = if (tarea.completada) {
+        stringResource(R.string.tarea_completada)
+    } else {
+        stringResource(tarea.vence.recurso, tarea.vence.dias)
+    }
 
     Card(
         modifier = modifier.alpha(transparencia),

@@ -78,4 +78,9 @@
     <string name="archivar_materia_descripcion">Ocultar de la selección de materias</string>
     <string name="guardar_materia">Guardar Materia</string>
     <string name="editar_tarea_titulo">Editar Tarea</string>
+    <string name="vence_atrasada">Atrasada</string>
+    <string name="vence_hoy">Vence Hoy</string>
+    <string name="vence_manana">Mañana</string>
+    <string name="vence_en_dias">En %1$d días</string>
+    <string name="usuario_nombre">Jonathan</string>
 </resources>

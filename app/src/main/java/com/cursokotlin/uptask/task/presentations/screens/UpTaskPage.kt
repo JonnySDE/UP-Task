@@ -52,11 +52,11 @@ fun UpTaskPage() {
     // La Factory sabe armar los ViewModels que necesitan el Repository
     val factory = UpTaskModule.proveerFactory(LocalContext.current)
 
-    val inicioViewModel: InicioViewModel = viewModel()
+    val inicioViewModel: InicioViewModel = viewModel(factory = factory)
     val tareasViewModel: TareasViewModel = viewModel(factory = factory)
-    val materiasViewModel: MateriasViewModel = viewModel()
-    val formularioTareaViewModel: AgregarTareaViewModel = viewModel()
-    val formularioMateriaViewModel: AgregarMateriaViewModel = viewModel()
+    val materiasViewModel: MateriasViewModel = viewModel(factory = factory)
+    val formularioTareaViewModel: AgregarTareaViewModel = viewModel(factory = factory)
+    val formularioMateriaViewModel: AgregarMateriaViewModel = viewModel(factory = factory)
 
     // Abre el formulario de tarea vacío. Lo usan Inicio y Tareas.
     val abrirNuevaTarea = {

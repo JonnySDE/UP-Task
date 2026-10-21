@@ -13,9 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cursokotlin.uptask.task.presentations.screens.EntregaUi
+
 
 @Composable
 fun ItemEntrega(
@@ -48,7 +50,7 @@ fun ItemEntrega(
                 )
             }
             Text(
-                text = entrega.vence,
+                text = stringResource(entrega.vence.recurso, entrega.vence.dias),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

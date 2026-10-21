@@ -24,3 +24,9 @@ fun formatearFecha(millis: Long): String {
     formato.timeZone = TimeZone.getTimeZone("UTC")
     return formato.format(Date(millis))
 }
+
+// Fecha de hoy con la zona horaria del teléfono, por ejemplo "Martes 20 de octubre"
+fun fechaDeHoyTexto(): String {
+    val formato = SimpleDateFormat("EEEE d 'de' MMMM", Locale.forLanguageTag("es-MX"))
+    return formato.format(Date()).replaceFirstChar { letra -> letra.uppercase() }
+}

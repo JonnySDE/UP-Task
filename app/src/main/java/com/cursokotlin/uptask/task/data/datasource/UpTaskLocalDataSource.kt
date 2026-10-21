@@ -19,6 +19,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import androidx.core.net.toUri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
 private const val ETIQUETA = "UpTaskDataSource"
 
 // DataStore de toda la app. Se declara una sola vez, fuera de la clase.
@@ -86,6 +90,29 @@ class UpTaskLocalDataSource(private val context: Context) {
             }
         } catch (e: IOException) {
             Log.e(ETIQUETA, "No se pudo cargar la semilla", e)
+        }
+    }
+
+    // ---------- IMÁGENES ----------
+
+    // Copia la imagen elegida a la memoria interna de la app y devuelve su dirección.
+    // Así la imagen sigue existiendo aunque el permiso de la galería caduque.
+    suspend fun copiarImagen(uri: String): String? = withContext(Dispatchers.IO) {
+        try {
+            val entrada = context.contentResolver.openInputStream(uri.toUri())
+                ?: return@withContext null
+
+            val carpeta = File(context.filesDir, "materias")
+            carpeta.mkdirs()
+            val archivo = File(carpeta, "materia_${System.currentTimeMillis()}.jpg")
+
+            entrada.use { origen ->
+                archivo.outputStream().use { destino -> origen.copyTo(destino) }
+            }
+            archivo.toUri().toString()
+        } catch (e: Exception) {
+            Log.e(ETIQUETA, "No se pudo copiar la imagen", e)
+            null
         }
     }
 

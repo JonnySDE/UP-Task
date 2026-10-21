@@ -83,4 +83,7 @@ class UpTaskRepositoryImpl(
             lista.filter { tarea -> tarea.id != id }
         }
     }
+    override suspend fun guardarImagen(uri: String): String? {
+        return dataSource.copiarImagen(uri)
+    }
 }

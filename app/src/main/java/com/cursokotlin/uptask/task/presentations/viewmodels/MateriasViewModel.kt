@@ -1,35 +1,73 @@
 package com.cursokotlin.uptask.task.presentations.viewmodels
 
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.cursokotlin.uptask.task.data.model.Materia
+import com.cursokotlin.uptask.task.data.model.Tarea
+import com.cursokotlin.uptask.task.data.repository.UpTaskRepository
+import com.cursokotlin.uptask.task.presentations.screens.MateriaFormulario
 import com.cursokotlin.uptask.task.presentations.screens.MateriaResumenUi
 import com.cursokotlin.uptask.task.presentations.screens.MateriasUiState
-import com.cursokotlin.uptask.ui.theme.AzulMarinoMateria
-import com.cursokotlin.uptask.ui.theme.AzulMateria
-import com.cursokotlin.uptask.ui.theme.GrisMateria
-import com.cursokotlin.uptask.ui.theme.MoradoMateria
-import com.cursokotlin.uptask.ui.theme.NaranjaMateria
-import com.cursokotlin.uptask.ui.theme.RosaMateria
-import com.cursokotlin.uptask.ui.theme.VerdeMateria
+import com.cursokotlin.uptask.task.presentations.utils.aColor
+import com.cursokotlin.uptask.task.presentations.utils.aHex
+import com.cursokotlin.uptask.task.presentations.utils.calcularPorcentaje
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
-import kotlin.math.roundToInt
-import com.cursokotlin.uptask.task.presentations.screens.MateriaFormulario
+import kotlinx.coroutines.launch
 
-class MateriasViewModel : ViewModel() {
+class MateriasViewModel(
+    private val repository: UpTaskRepository
+) : ViewModel() {
 
+    // _uiState es privado: solo el ViewModel lo puede cambiar
     private val _uiState = MutableStateFlow(MateriasUiState())
 
+    // uiState es público y de solo lectura: la página solo lo observa
     val uiState: StateFlow<MateriasUiState> = _uiState.asStateFlow()
 
+    // La lista COMPLETA de materias (activas y archivadas). Solo el ViewModel la conoce.
     private var todasLasMaterias: List<MateriaResumenUi> = emptyList()
 
     init {
-        cargarDatosDePrueba()
+        observarDatos()
     }
 
+    // Escucha al Repository. Cuando cambian las materias o las tareas, se recalcula todo.
+    private fun observarDatos() {
+        viewModelScope.launch {
+            combine(
+                repository.obtenerMaterias(),
+                repository.obtenerTareas()
+            ) { materias, tareas ->
+                convertirAMateriasUi(materias, tareas)
+            }.collect { materiasUi ->
+                todasLasMaterias = materiasUi
+                mostrarMaterias()
+            }
+        }
+    }
+
+    // Cuenta las tareas de cada materia y calcula su porcentaje de cumplimiento
+    private fun convertirAMateriasUi(materias: List<Materia>, tareas: List<Tarea>): List<MateriaResumenUi> {
+        return materias.map { materia ->
+            val tareasDeLaMateria = tareas.filter { it.materiaId == materia.id }
+            val completadas = tareasDeLaMateria.count { it.completada }
+
+            MateriaResumenUi(
+                id = materia.id,
+                nombre = materia.nombre,
+                color = materia.color.aColor(),
+                pendientes = tareasDeLaMateria.size - completadas,
+                completadas = completadas,
+                cumplimiento = calcularPorcentaje(completadas, tareasDeLaMateria.size),
+                archivada = materia.archivada,
+                imagenUri = materia.imagenUri
+            )
+        }
+    }
 
     // Cambia entre la pestaña Activas y la pestaña Archivadas
     fun cambiarPestana(archivadas: Boolean) {
@@ -39,41 +77,24 @@ class MateriasViewModel : ViewModel() {
 
     // Archiva una materia activa o restaura una archivada
     fun alternarArchivada(id: Int) {
-        todasLasMaterias = todasLasMaterias.map { materia ->
-            if (materia.id == id) materia.copy(archivada = !materia.archivada) else materia
+        viewModelScope.launch {
+            repository.alternarArchivada(id)
         }
-        mostrarMaterias()
     }
 
-    // Recibe lo que el formulario guardó: crea una materia nueva o actualiza una existente
+    // Recibe lo que el formulario guardó. Si trae id es una edición, si no, es una materia nueva.
     fun guardarMateria(datos: MateriaFormulario) {
-        if (datos.id == null) {
-            // Materia nueva: empieza sin tareas
-            val nueva = crearMateria(
-                id = (todasLasMaterias.maxOfOrNull { it.id } ?: 0) + 1,
-                nombre = datos.nombre,
-                color = datos.color,
-                pendientes = 0,
-                completadas = 0
-            ).copy(imagenUri = datos.imagenUri, archivada = datos.archivada)
-
-            todasLasMaterias = todasLasMaterias + nueva
-        } else {
-            // Materia existente: solo cambian los datos del formulario
-            todasLasMaterias = todasLasMaterias.map { materia ->
-                if (materia.id == datos.id) {
-                    materia.copy(
-                        nombre = datos.nombre,
-                        color = datos.color,
-                        imagenUri = datos.imagenUri,
-                        archivada = datos.archivada
-                    )
-                } else {
-                    materia
-                }
-            }
+        viewModelScope.launch {
+            repository.guardarMateria(
+                Materia(
+                    id = datos.id ?: 0,
+                    nombre = datos.nombre,
+                    color = datos.color.aHex(),
+                    imagenUri = datos.imagenUri,
+                    archivada = datos.archivada
+                )
+            )
         }
-        mostrarMaterias()
     }
 
     // Separa activas y archivadas, y actualiza lo que se ve en pantalla
@@ -88,44 +109,5 @@ class MateriasViewModel : ViewModel() {
                 materiasMostradas = if (estadoActual.mostrandoArchivadas) archivadas else activas
             )
         }
-    }
-
-    // Porcentaje = completadas / total de tareas. Si no hay tareas, es 0.
-    private fun calcularCumplimiento(pendientes: Int, completadas: Int): Int {
-        val total = pendientes + completadas
-        if (total == 0) return 0
-        return (completadas * 100f / total).roundToInt()
-    }
-
-    private fun crearMateria(
-        id: Int,
-        nombre: String,
-        color: Color,
-        pendientes: Int,
-        completadas: Int
-    ): MateriaResumenUi {
-        return MateriaResumenUi(
-            id = id,
-            nombre = nombre,
-            color = color,
-            pendientes = pendientes,
-            completadas = completadas,
-            cumplimiento = calcularCumplimiento(pendientes, completadas),
-            archivada = false
-        )
-    }
-
-    // Datos temporales
-    private fun cargarDatosDePrueba() {
-        todasLasMaterias = listOf(
-            crearMateria(1, "Aplicaciones Móviles", VerdeMateria, pendientes = 2, completadas = 5),
-            crearMateria(2, "Aplicaciones Web", AzulMateria, pendientes = 1, completadas = 3),
-            crearMateria(3, "Análisis y Diseño", MoradoMateria, pendientes = 3, completadas = 2),
-            crearMateria(4, "Inglés IV", NaranjaMateria, pendientes = 2, completadas = 2),
-            crearMateria(5, "Ética Profesional", AzulMarinoMateria, pendientes = 0, completadas = 0),
-            crearMateria(6, "Estructura de Datos", GrisMateria, pendientes = 4, completadas = 1),
-            crearMateria(7, "Cálculo Varias Variables", RosaMateria, pendientes = 3, completadas = 0)
-        )
-        mostrarMaterias()
     }
 }

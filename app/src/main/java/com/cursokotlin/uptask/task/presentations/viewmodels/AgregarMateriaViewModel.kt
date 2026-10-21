@@ -2,6 +2,8 @@ package com.cursokotlin.uptask.task.presentations.viewmodels
 
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.cursokotlin.uptask.task.data.repository.UpTaskRepository
 import com.cursokotlin.uptask.task.presentations.screens.AgregarMateriaUiState
 import com.cursokotlin.uptask.task.presentations.screens.MateriaFormulario
 import com.cursokotlin.uptask.task.presentations.screens.MateriaResumenUi
@@ -16,8 +18,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class AgregarMateriaViewModel : ViewModel() {
+class AgregarMateriaViewModel(
+    private val repository: UpTaskRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AgregarMateriaUiState())
     val uiState: StateFlow<AgregarMateriaUiState> = _uiState.asStateFlow()
@@ -36,6 +41,8 @@ class AgregarMateriaViewModel : ViewModel() {
     init {
         iniciarNueva()
     }
+
+    // ---------- Cómo se abre el formulario ----------
 
     // Formulario vacío para crear una materia
     fun iniciarNueva() {
@@ -57,6 +64,8 @@ class AgregarMateriaViewModel : ViewModel() {
         )
     }
 
+    // ---------- EVENTOS del formulario ----------
+
     fun cambiarNombre(texto: String) {
         // Al escribir, el mensaje de error desaparece
         _uiState.update { estado -> estado.copy(nombre = texto, errorNombre = false) }
@@ -66,8 +75,14 @@ class AgregarMateriaViewModel : ViewModel() {
         _uiState.update { estado -> estado.copy(colorSeleccionado = color) }
     }
 
+    // La imagen se copia a la memoria de la app antes de guardarla en el estado
     fun cambiarImagen(uri: String) {
-        _uiState.update { estado -> estado.copy(imagenUri = uri) }
+        viewModelScope.launch {
+            val ruta = repository.guardarImagen(uri)
+            if (ruta != null) {
+                _uiState.update { estado -> estado.copy(imagenUri = ruta) }
+            }
+        }
     }
 
     fun cambiarArchivada(archivada: Boolean) {

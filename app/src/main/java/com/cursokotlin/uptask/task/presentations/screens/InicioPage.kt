@@ -35,13 +35,14 @@ import com.cursokotlin.uptask.task.presentations.components.TarjetaEstadistica
 import com.cursokotlin.uptask.task.presentations.components.TarjetaMateria
 import com.cursokotlin.uptask.task.presentations.viewmodels.InicioViewModel
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.heightIn
 
 @Composable
 fun InicioPage(
     alAgregarTarea: () -> Unit,
     alVerTodas: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: InicioViewModel = viewModel()
+    viewModel: InicioViewModel
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -81,7 +82,10 @@ fun InicioContenido(
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = stringResource(R.string.inicio_saludo, uiState.nombreUsuario),
+                    text = stringResource(
+                        R.string.inicio_saludo,
+                        stringResource(R.string.usuario_nombre)
+                    ),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
@@ -175,7 +179,7 @@ fun InicioContenido(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp),
+                    .heightIn(max = 300.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(uiState.proximasEntregas) { entrega ->

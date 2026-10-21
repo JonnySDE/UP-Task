@@ -14,4 +14,5 @@ interface UpTaskRepository {
     suspend fun guardarTarea(tarea: Tarea)
     suspend fun cambiarEstadoTarea(id: Int, completada: Boolean)
     suspend fun eliminarTarea(id: Int)
+    suspend fun guardarImagen(uri: String): String?
 }

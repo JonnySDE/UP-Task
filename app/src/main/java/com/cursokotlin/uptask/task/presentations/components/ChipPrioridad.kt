@@ -12,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cursokotlin.uptask.R
-import com.cursokotlin.uptask.task.presentations.screens.Prioridad
+import com.cursokotlin.uptask.task.data.model.Prioridad
 import com.cursokotlin.uptask.ui.theme.PrioridadBajaFondo
 import com.cursokotlin.uptask.ui.theme.PrioridadBajaTexto
 import com.cursokotlin.uptask.ui.theme.PrioridadMediaFondo

@@ -3,6 +3,7 @@ package com.cursokotlin.uptask.task.presentations.screens
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.cursokotlin.uptask.R
+import com.cursokotlin.uptask.task.data.model.Prioridad
 
 // Opciones del filtro de estado. Cada una trae su texto.
 enum class FiltroEstado(@StringRes val texto: Int) {
@@ -30,6 +31,7 @@ enum class Orden(@StringRes val texto: Int) {
 data class TareaUi(
     val id: Int,
     val titulo: String,
+    val materiaId: Int,
     val materia: String,
     val colorMateria: Color,
     val prioridad: Prioridad,

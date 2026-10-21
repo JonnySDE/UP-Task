@@ -17,7 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.cursokotlin.uptask.task.presentations.screens.Prioridad
+import com.cursokotlin.uptask.R
+import com.cursokotlin.uptask.task.data.model.Prioridad
 import com.cursokotlin.uptask.ui.theme.GrisSelector
 
 @Composable
@@ -46,6 +47,13 @@ fun SelectorPrioridad(
             Prioridad.entries.forEach { prioridad ->
                 val activa = prioridad == seleccionada
 
+                // El texto de cada prioridad sale de strings.xml
+                val textoPrioridad = when (prioridad) {
+                    Prioridad.BAJA -> stringResource(R.string.prioridad_baja)
+                    Prioridad.MEDIA -> stringResource(R.string.prioridad_media)
+                    Prioridad.ALTA -> stringResource(R.string.prioridad_alta)
+                }
+
                 Surface(
                     onClick = { alSeleccionar(prioridad) },
                     modifier = Modifier.weight(1f),
@@ -53,7 +61,7 @@ fun SelectorPrioridad(
                     color = if (activa) MaterialTheme.colorScheme.primary else Color.Transparent
                 ) {
                     Text(
-                        text = stringResource(prioridad.texto).uppercase(),
+                        text = textoPrioridad.uppercase(),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 10.dp),

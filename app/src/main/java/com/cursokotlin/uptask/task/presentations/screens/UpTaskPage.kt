@@ -17,13 +17,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cursokotlin.uptask.R
+import com.cursokotlin.uptask.task.di.UpTaskModule
 import com.cursokotlin.uptask.task.presentations.viewmodels.AgregarMateriaViewModel
 import com.cursokotlin.uptask.task.presentations.viewmodels.AgregarTareaViewModel
+import com.cursokotlin.uptask.task.presentations.viewmodels.InicioViewModel
 import com.cursokotlin.uptask.task.presentations.viewmodels.MateriasViewModel
 import com.cursokotlin.uptask.task.presentations.viewmodels.TareasViewModel
 
@@ -46,8 +49,11 @@ fun UpTaskPage() {
     var mostrandoFormularioTarea by rememberSaveable { mutableStateOf(false) }
     var mostrandoFormularioMateria by rememberSaveable { mutableStateOf(false) }
 
-    // Son los mismos ViewModels que usan las páginas. Temporal, hasta tener el Repository.
-    val tareasViewModel: TareasViewModel = viewModel()
+    // La Factory sabe armar los ViewModels que necesitan el Repository
+    val factory = UpTaskModule.proveerFactory(LocalContext.current)
+
+    val inicioViewModel: InicioViewModel = viewModel()
+    val tareasViewModel: TareasViewModel = viewModel(factory = factory)
     val materiasViewModel: MateriasViewModel = viewModel()
     val formularioTareaViewModel: AgregarTareaViewModel = viewModel()
     val formularioMateriaViewModel: AgregarMateriaViewModel = viewModel()
@@ -62,14 +68,16 @@ fun UpTaskPage() {
         mostrandoFormularioTarea -> {
             AgregarTareaPage(
                 alVolver = { mostrandoFormularioTarea = false },
-                alGuardar = { datos -> tareasViewModel.guardarTarea(datos) }
+                alGuardar = { datos -> tareasViewModel.guardarTarea(datos) },
+                viewModel = formularioTareaViewModel
             )
         }
 
         mostrandoFormularioMateria -> {
             AgregarMateriaPage(
                 alVolver = { mostrandoFormularioMateria = false },
-                alGuardar = { datos -> materiasViewModel.guardarMateria(datos) }
+                alGuardar = { datos -> materiasViewModel.guardarMateria(datos) },
+                viewModel = formularioMateriaViewModel
             )
         }
 
@@ -104,7 +112,8 @@ fun UpTaskPage() {
                     Seccion.INICIO -> InicioPage(
                         alAgregarTarea = abrirNuevaTarea,
                         alVerTodas = { seccionActual = Seccion.TAREAS },
-                        modifier = Modifier.padding(espacioSeguro)
+                        modifier = Modifier.padding(espacioSeguro),
+                        viewModel = inicioViewModel
                     )
 
                     Seccion.TAREAS -> TareasPage(
@@ -114,7 +123,8 @@ fun UpTaskPage() {
                             formularioTareaViewModel.iniciarEdicion(tarea)
                             mostrandoFormularioTarea = true
                         },
-                        modifier = Modifier.padding(espacioSeguro)
+                        modifier = Modifier.padding(espacioSeguro),
+                        viewModel = tareasViewModel
                     )
 
                     Seccion.MATERIAS -> MateriasPage(
@@ -128,7 +138,8 @@ fun UpTaskPage() {
                             formularioMateriaViewModel.iniciarEdicion(materia)
                             mostrandoFormularioMateria = true
                         },
-                        modifier = Modifier.padding(espacioSeguro)
+                        modifier = Modifier.padding(espacioSeguro),
+                        viewModel = materiasViewModel
                     )
                 }
             }

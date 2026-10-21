@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.cursokotlin.uptask.R
+import com.cursokotlin.uptask.task.data.model.Prioridad
 import com.cursokotlin.uptask.task.presentations.components.CampoTexto
 import com.cursokotlin.uptask.task.presentations.components.DialogoCalendario
 import com.cursokotlin.uptask.task.presentations.components.SelectorFecha

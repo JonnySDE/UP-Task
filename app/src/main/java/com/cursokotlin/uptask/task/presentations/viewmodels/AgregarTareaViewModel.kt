@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.cursokotlin.uptask.task.presentations.screens.AgregarTareaUiState
 import com.cursokotlin.uptask.task.presentations.screens.MateriaUi
 import com.cursokotlin.uptask.task.presentations.screens.NuevaTarea
-import com.cursokotlin.uptask.task.presentations.screens.Prioridad
+import com.cursokotlin.uptask.task.data.model.Prioridad
 import com.cursokotlin.uptask.task.presentations.screens.TareaUi
 import com.cursokotlin.uptask.task.presentations.utils.MILISEGUNDOS_POR_DIA
 import com.cursokotlin.uptask.task.presentations.utils.formatearFecha

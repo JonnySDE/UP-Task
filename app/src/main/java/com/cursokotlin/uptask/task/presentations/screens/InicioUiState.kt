@@ -1,6 +1,7 @@
 package com.cursokotlin.uptask.task.presentations.screens
 
 import androidx.compose.ui.graphics.Color
+import com.cursokotlin.uptask.task.data.model.Prioridad
 
 // Una entrega que se muestra en la lista "Próximas Entregas"
 data class EntregaUi(

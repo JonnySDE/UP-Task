@@ -18,7 +18,7 @@ fun hoyEnMillisUtc(): Long {
     return utc.timeInMillis
 }
 
-// Convierte los milisegundos en texto
+// Convierte los milisegundos en texto, por ejemplo "13 de octubre, 2026"
 fun formatearFecha(millis: Long): String {
     val formato = SimpleDateFormat("d 'de' MMMM, yyyy", Locale.forLanguageTag("es-MX"))
     formato.timeZone = TimeZone.getTimeZone("UTC")

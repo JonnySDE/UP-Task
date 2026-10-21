@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.cursokotlin.uptask.task.presentations.screens.EntregaUi
 import com.cursokotlin.uptask.task.presentations.screens.InicioUiState
 import com.cursokotlin.uptask.task.presentations.screens.MateriaRendimientoUi
-import com.cursokotlin.uptask.task.presentations.screens.Prioridad
+import com.cursokotlin.uptask.task.data.model.Prioridad
 import com.cursokotlin.uptask.ui.theme.AzulMateria
 import com.cursokotlin.uptask.ui.theme.MoradoMateria
 import com.cursokotlin.uptask.ui.theme.VerdeMateria
